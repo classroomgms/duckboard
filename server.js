@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 // Import route files (make sure each exports a valid router)
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./backend/routes/auth");
 const userRoutes = require("./routes/users");
 const feedbackRoutes = require("./routes/feedback");
 const suggestionRoutes = require("./routes/suggestions");
