@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Access Portal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    input, button, textarea {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    #loginScreen, #adminDashboard, #userDashboard, #gameScreen,
+    #feedbackScreen, #suggestGameScreen, #requestFormScreen {
+      display: none;
+      text-align: center;
+    }
+    #termsBtn, #logoutBtn {
+      position: fixed;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 100;
+      border-radius: 6px;
+    }
+    #termsBtn { bottom: 20px; right: 20px; }
+    #logoutBtn { top: 20px; right: 20px; }
+    #termsModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    #termsContent {
+      background-color: #222;
+      color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      font-size: 16px;
+    }
+    #termsContent h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #0f0;
+    }
+    #termsContent ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      text-align: left;
+    }
+    #termsContent button {
+      margin-top: 20px;
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: #555;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #feedbackList, #activityList, #gameSuggestionsList, #requestedUsersList {
+      text-align: left;
+      max-width: 600px;
+      margin: auto;
+      margin-top: 20px;
+      display: none;
+    }
+    .fade {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .fade.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h1>Login</h1>
+  <input type="text" id="username" placeholder="Username" /><br>
+  <input type="password" id="password" placeholder="Password" /><br>
+  <button onclick="login()">Login</button>
+  <button onclick="showRequestForm()">Request an Account</button>
+  <p id="loginError" style="color:red;"></p>
+</div>
+
+<div id="requestFormScreen">
+  <h2>Request an Account</h2>
+  <input type="text" id="requestName" placeholder="Your Name" /><br>
+  <button onclick="submitRequest()">Submit Request</button>
+  <p id="requestMessage" style="color:lightgreen;"></p>
+  <button onclick="backToLogin()">Back</button>
+</div>
+
+<div id="adminDashboard">
+  <h1>Admin Dashboard</h1>
+  <input type="text" id="newUser" placeholder="New Username" />
+  <input type="password" id="newPass" placeholder="New Password" />
+  <button onclick="createUser()">Create User</button><br><br>
+  <input type="text" id="banUserInput" placeholder="Username to Ban" />
+  <button onclick="banUser()">Ban User</button><br><br>
+  <input type="text" id="deleteUserInput" placeholder="Username to Delete" />
+  <button onclick="deleteUser()">Delete User</button><br><br>
+  <button onclick="toggleSection('feedbackList')">Read Feedback</button>
+  <button onclick="toggleSection('activityList')">View Activity Log</button>
+  <button onclick="toggleSection('gameSuggestionsList')">Suggested Games</button>
+  <button onclick="toggleSection('requestedUsersList')">Requested Users</button>
+  <button onclick="toggleSection('passwordList')">View User Passwords</button>
+<div id="passwordList" style="display:none;"></div><br><br>
+  <h3>Registered Users:</h3>
+  <ul id="userList"></ul>
+  <div id="feedbackList"></div>
+  <div id="activityList"></div>
+  <div id="gameSuggestionsList"></div>
+  <div id="requestedUsersList"></div>
+</div>
+
+<div id="userDashboard">
+  <h1>Welcome!</h1>
+  <button onclick="showGame()">Play Game</button>
+  <button onclick="showFeedback()">Give Feedback</button>
+  <button onclick="showGameSuggestion()">Suggest a Game</button>
+</div>
+
+<div id="gameScreen">
+  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Practice Your Math</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+  }
+  canvas {
+    background-color: #000;
+    border: 2px solid #fff;
+    display: block;
+    margin: auto;
+    transition: opacity 0.3s ease;
+  }
+  #message {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.2em;
+    color: #ff0;
+    z-index: 10;
+  }
+  #ticker {
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: 60px;
+    color: #fff;
+    font-weight: bold;
+    z-index: 20;
+    animation: none;
+  }
+  @keyframes slideTicker {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  #pauseBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    padding: 8px 12px;
+    font-size: 1em;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  #mathMode {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #222;
+    color: #fff;
+    z-index: 30;
+  }
+  #mathQuestion {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  #mathAnswer {
+    font-size: 32px;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+  }
+  #submitAnswer {
+    margin-top: 10px;
+    font-size: 24px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="message"></div>
+<div id="ticker"></div>
+<button id="pauseBtn">Pause</button>
+<canvas id="gameCanvas" width="1350" height="595"></canvas>
+<div id="mathMode">
+  <div id="mathQuestion"></div>
+  <input type="text" id="mathAnswer" placeholder="Your answer" />
+  <button id="submitAnswer">Submit</button>
+</div>
+
+
+
+
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  const message = document.getElementById("message");
+  const ticker = document.getElementById("ticker");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const mathMode = document.getElementById("mathMode");
+  const mathQuestion = document.getElementById("mathQuestion");
+  const mathAnswer = document.getElementById("mathAnswer");
+  const submitAnswer = document.getElementById("submitAnswer");
+
+
+
+
+  const gridSize = 20;
+  const tileCountX = canvas.width / gridSize;
+  const tileCountY = canvas.height / gridSize;
+
+
+
+
+  let snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
+  let direction = { x: 1, y: 0 }; // Start moving right
+  let lastDirection = { x: 1, y: 0 }; // Remember last valid direction to prevent backward move
+  let foods = [randomTile()];
+  let score = 9999999999;
+  let highScore = localStorage.getItem("snakeHighScore") || 0;
+
+
+
+
+  let monsters = [];
+  let monsterMoveCounter = 0;
+  let baseInterval = 100;
+  let speed = baseInterval;
+
+
+
+
+  let shieldActive = false;
+
+
+
+
+  let powerUp = null;
+  let powerUpType = null;
+
+
+
+
+  let comboCount = 0;
+  let comboActivated = {};
+  let comboDoublePointsLeft = 0;
+
+
+
+
+  let lastTime = 0;
+  let pressedKeys = {};
+  let paused = false;
+  let inMathMode = false;
+  let gameStarted = false;
+
+
+
+
+  function randomTile() {
+    return {
+      x: Math.floor(Math.random() * tileCountX),
+      y: Math.floor(Math.random() * tileCountY)
+    };
+  }
+
+
+
+
+  function showStartScreen() {
+    message.textContent = "Press SPACE to start - M for Math Mode - P to Pause - Avoid Blue Monsters!";
+    canvas.style.opacity = 0.3;
+  }
+
+
+
+
+  function showTicker(text) {
+    ticker.textContent = text;
+    ticker.style.animation = "none";
+    void ticker.offsetWidth;
+    ticker.style.animation = "slideTicker 4s linear forwards";
+  }
+
+
+
+
+  function generateMathProblem() {
+    const types = ["linear", "exponent", "sqrt", "fraction", "order"];
+    const type = types[Math.floor(Math.random() * types.length)];
+    let question = "", answer = "";
+
+
+
+
+    if (type === "linear") {
+      const a = Math.floor(Math.random() * 10) + 1;
+      const x = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      const result = a * x + b;
+      question = `Solve for x: ${a}x + ${b} = ${result}`;
+      answer = x.toString();
+    } else if (type === "exponent") {
+      const base = Math.floor(Math.random() * 9) + 2;
+      const exp = Math.floor(Math.random() * 3) + 2;
+      question = `${base}^${exp}`;
+      answer = Math.pow(base, exp).toString();
+    } else if (type === "sqrt") {
+      const root = Math.floor(Math.random() * 15) + 1;
+      const square = root * root;
+      question = `√${square}`;
+      answer = root.toString();
+    } else if (type === "fraction") {
+      const a = Math.floor(Math.random() * 9) + 1;
+      const b = Math.floor(Math.random() * 9) + 1;
+      const c = Math.floor(Math.random() * 9) + 1;
+      const d = Math.floor(Math.random() * 9) + 1;
+      const op = Math.random() < 0.5 ? "+" : "-";
+      question = `${a}/${b} ${op} ${c}/${d}`;
+      const val = op === "+" ? (a / b + c / d) : (a / b - c / d);
+      answer = val.toFixed(2);
+    } else if (type === "order") {
+      const a = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      const c = Math.floor(Math.random() * 10);
+      question = `${a} + ${b} × (${c} - 1)`;
+      answer = (a + b * (c - 1)).toString();
+    }
+
+
+
+
+    mathQuestion.textContent = question;
+    mathAnswer.value = "";
+    mathAnswer.dataset.correct = answer;
+  }
+
+
+
+
+  submitAnswer.onclick = () => {
+    const userAnswer = mathAnswer.value.trim();
+    const correct = mathAnswer.dataset.correct;
+    const isCorrect = parseFloat(userAnswer).toFixed(2) === parseFloat(correct).toFixed(2);
+
+
+
+
+    if (isCorrect) {
+      comboCount++;
+      alert(`✅ Correct! Combo x${comboCount}`);
+      showTicker(`Combo x${comboCount}!`);
+
+
+
+
+      if (comboCount >= 3 && !comboActivated[3]) {
+        comboDoublePointsLeft = 2;
+        comboActivated[3] = true;
+      }
+      if (comboCount >= 5 && !comboActivated[5]) {
+        powerUp = randomTile();
+        powerUpType = "shield";  // Magnet removed
+        comboActivated[5] = true;
+      }
+      if (comboCount >= 15 && !comboActivated[15]) {
+        monsters.splice(0, 10);
+        showTicker("💥 Combo x15! 10 monsters deleted!");
+        comboActivated[15] = true;
+      }
+      if (comboCount >= 20 && !comboActivated[20]) {
+        for (let i = 0; i < 20; i++) {
+          foods.push(randomTile());
+        }
+        showTicker("🍎 Combo x20! 20 apples spawned!");
+        comboActivated[20] = true;
+      }
+      if (comboCount >= 100 && !comboActivated[100]) {
+        score += 50;
+        showTicker("🎉 Combo x100! +50 points!");
+        comboActivated[100] = true;
+      }
+    } else {
+      alert(`❌ Incorrect. Correct answer was ${correct}`);
+      comboCount = 0;
+      comboActivated = {};
+      comboDoublePointsLeft = 0;
+    }
+
+
+
+
+    generateMathProblem();
+  };
+
+
+
+
+  pauseBtn.onclick = () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? "Resume" : "Pause";
+  };
+
+
+
+
+  document.addEventListener("keydown", (e) => {
+    pressedKeys[e.key] = true;
+    if (e.key === " ") {
+      if (!gameStarted) startGame();
+    }
+    if (e.key.toLowerCase() === "m") {
+      if (!inMathMode) {
+        mathMode.style.display = "flex";
+        canvas.style.display = "none";
+        pauseBtn.style.display = "none";
+        message.style.display = "none";
+        generateMathProblem(5);
+        inMathMode = true;
+        paused = true;
+      } else {
+        mathMode.style.display = "none";
+        canvas.style.display = "block";
+        pauseBtn.style.display = "block";
+        message.style.display = "block";
+        inMathMode = false;
+        paused = false;
+      }
+    }
+    if (e.key.toLowerCase() === "p") {
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+    }
+  });
+
+
+
+
+  document.addEventListener("keyup", (e) => {
+    delete pressedKeys[e.key];
+  });
+
+
+
+
+  function updateDirection() {
+    // Prevent snake from turning back into itself by disallowing 180 deg reversals
+    if (pressedKeys["ArrowUp"] || pressedKeys["w"]) {
+      if (lastDirection.y !== 1) direction = { x: 0, y: -1 };
+    } else if (pressedKeys["ArrowDown"] || pressedKeys["s"]) {
+      if (lastDirection.y !== -1) direction = { x: 0, y: 1 };
+    } else if (pressedKeys["ArrowLeft"] || pressedKeys["a"]) {
+      if (lastDirection.x !== 1) direction = { x: -1, y: 0 };
+    } else if (pressedKeys["ArrowRight"] || pressedKeys["d"]) {
+      if (lastDirection.x !== -1) direction = { x: 1, y: 0 };
+    }
+  }
+
+
+
+
+  function drawTile(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * gridSize, y * gridSize, gridSize - 2, gridSize - 2);
+  }
+
+
+
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    snake.forEach((segment, i) => drawTile(segment.x, segment.y, i === 0 ? "#0f0" : "#0a0"));
+    foods.forEach(food => drawTile(food.x, food.y, "#f00"));
+    monsters.forEach(monster => drawTile(monster.x, monster.y, "#00f"));
+    if (powerUp) drawTile(powerUp.x, powerUp.y, "#ff0");
+  }
+
+
+
+
+  function moveMonsters() {
+    monsterMoveCounter++;
+    if (monsterMoveCounter % 10 !== 0) return;
+    monsters.forEach(monster => {
+      const head = snake[0];
+      const dx = head.x - monster.x;
+      const dy = head.y - monster.y;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        monster.x += dx > 0 ? 1 : -1;
+      } else if (Math.abs(dy) > 0) {
+        monster.y += dy > 0 ? 1 : -1;
+      }
+    });
+  }
+
+
+
+
+  function update() {
+    if (!gameStarted || paused || inMathMode) return;
+    updateDirection();
+
+
+
+
+    // Only update lastDirection if the new direction is not directly opposite
+    if ((direction.x !== -lastDirection.x) || (direction.y !== -lastDirection.y)) {
+      lastDirection = direction;
+    }
+
+
+
+
+    moveMonsters();
+
+
+
+
+    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+    if (
+      head.x < 0 || head.x >= tileCountX ||
+      head.y < 0 || head.y >= tileCountY ||
+      snake.some(seg => seg.x === head.x && seg.y === head.y)
+    ) {
+      setTimeout(() => {
+  alert("You Died! Get Better Lazy Bum.");
+  backToDashboard();
+}, 100);
+    }
+
+
+
+
+    snake.unshift(head);
+
+
+
+
+    let ateFood = false;
+    foods = foods.filter(food => {
+      if (head.x === food.x && head.y === food.y) {
+        ateFood = true;
+        return false;
+      }
+      return true;
+    });
+
+
+
+
+    if (ateFood) {
+      let points = 1;
+      if (comboDoublePointsLeft > 0) {
+        points = 2;
+        comboDoublePointsLeft--;
+      }
+      score += points;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("snakeHighScore", highScore);
+      }
+
+
+
+
+      monsters.push(randomTile());
+
+
+
+
+      const newFoodCount = Math.floor(score / 3) + 1;
+      while (foods.length < newFoodCount) {
+        foods.push(randomTile());
+      }
+
+
+
+
+      if (score % 7 === 0) {
+        powerUp = randomTile();
+        powerUpType = "shield";
+        showTicker(`Power-Up: ${powerUpType.toUpperCase()}!`);
+      }
+    } else {
+      snake.pop();
+    }
+
+
+
+
+    for (let i = 0; i < monsters.length; i++) {
+      if (head.x === monsters[i].x && head.y === monsters[i].y) {
+        if (shieldActive) {
+          monsters.splice(i, 1);
+          shieldActive = false;
+        } else {
+          alert("Caught by a monster!");
+          location.reload();
+          return;
+        }
+        break;
+      }
+    }
+
+
+
+
+    if (powerUp && head.x === powerUp.x && head.y === powerUp.y) {
+      if (powerUpType === "shield") {
+        shieldActive = true;
+      }
+      powerUp = null;
+      powerUpType = null;
+    }
+
+
+
+
+    message.textContent = `Score: ${score} | High Score: ${highScore}` +
+      (shieldActive ? " | Shield ON" : "") +
+      (comboCount > 0 ? ` | Combo x${comboCount}` : "");
+
+
+
+
+    draw();
+  }
+
+
+
+
+  function gameLoop(timestamp) {
+    if (timestamp - lastTime > speed) {
+      update();
+      lastTime = timestamp;
+    }
+    requestAnimationFrame(gameLoop);
+  }
+
+
+
+
+  function startGame() {
+    gameStarted = true;
+    canvas.style.opacity = 1;
+    direction = { x: 1, y: 0 };
+    lastDirection = { x: 1, y: 0 };
+    score = 0;
+    comboCount = 0;
+    comboActivated = {};
+    comboDoublePointsLeft = 0;
+    shieldActive = false;
+    snake = [{ x: Math.floor(tileCountX / 2), y: Math.floor(tileCountY / 2) }];
+    foods = [randomTile()];
+    monsters = [];
+    powerUp = null;
+    powerUpType = null;
+    message.textContent = `Score: ${score} | High Score: ${highScore}`;
+  }
+
+
+
+
+  showStartScreen();
+  requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
+</div>
+
+<div id="feedbackScreen">
+  <h2>Submit Feedback</h2>
+  <textarea id="feedbackText" rows="5" cols="40" placeholder="Type your feedback here..."></textarea><br>
+  <button onclick="submitFeedback()">Send</button>
+  <button onclick="backToDashboard()">Back</button>
+</div>
+
+<div id="suggestGameScreen">
+  <h2>Suggest a Game</h2>
+  <textarea id="gameSuggestionText" rows="5" cols="40" placeholder="Suggest a game..."></textarea><br>
+  <button onclick="submitGameSuggestion()">Send</button>
+  <button onclick="backToDashboard()">Back</button>
+</div>
+
+<button id="termsBtn">Terms of Use</button>
+<button id="logoutBtn" onclick="logout()">Logout</button>
+
+<div id="termsModal">
+  <div id="termsContent">
+    <h2>Terms of Use</h2>
+    <ul>
+      <li>Access is granted only to verified users who have paid the required fee.</li>
+      <li>Each user is given a unique password. Sharing your password is strictly prohibited.</li>
+      <li>Violators will have access revoked without refund.</li>
+      <li>Reinstatement after revocation requires a $10 fee, payable in cash.</li>
+      <li>Do not attempt to bypass, manipulate, or reverse-engineer the login system.</li>
+      <li>Games rotate every two weeks.</li>
+      <li>Payments are non-refundable. No exceptions.</li>
+      <li>Respectful behavior is expected. Harassment, abuse, or disruptive conduct will result in a ban.</li>
+      <li>Attempts to copy, redistribute, or clone this site are strictly prohibited.</li>
+      <li>By logging in, you agree to these terms and any future amendments.</li>
+    </ul>
+    <button onclick="closeTerms()">Close</button>
+  </div>
+</div>
+
+<script>
+    const adminUsername = "admin";
+const adminPassword = "Rich6696?";
+let currentUser = null;
+const users = JSON.parse(localStorage.getItem("users") || "{}");
+
+function saveUsers() {
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+function login() {
+  const u = username.value.trim();
+  const p = password.value.trim();
+  if (u === adminUsername && p === adminPassword) {
+    loginScreen.style.display = "none";
+    fadeIn(adminDashboard);
+    logoutBtn.style.display = "block";
+    renderUserList();
+    currentUser = u;
+    logActivity("logged in as admin");
+    return;
+  }
+  if (!users[u]) return loginError.textContent = "User not found.";
+  if (users[u].banned) return loginError.textContent = "Access revoked. Contact admin.";
+  if (users[u].password !== p) return loginError.textContent = "Incorrect password.";
+  loginScreen.style.display = "none";
+  fadeIn(userDashboard);
+  logoutBtn.style.display = "block";
+  currentUser = u;
+  logActivity("logged in");
+}
+
+function logout() {
+  currentUser = null;
+  loginScreen.style.display = "block";
+  adminDashboard.style.display = "none";
+  userDashboard.style.display = "none";
+  gameScreen.style.display = "none";
+  feedbackScreen.style.display = "none";
+  suggestGameScreen.style.display = "none";
+  requestFormScreen.style.display = "none";
+  logoutBtn.style.display = "none";
+  feedbackList.innerHTML = "";
+  activityList.innerHTML = "";
+  gameSuggestionsList.innerHTML = "";
+  requestedUsersList.innerHTML = "";
+}
+
+function createUser() {
+  const u = newUser.value.trim();
+  const p = newPass.value.trim();
+  if (!u || !p) return alert("Enter both username and password.");
+  if (users[u]) return alert("Username already exists.");
+  users[u] = { password: p, banned: false, created: new Date().toLocaleString() };
+  saveUsers();
+  renderUserList();
+  alert(`User "${u}" created successfully.`);
+  newUser.value = "";
+  newPass.value = "";
+}
+
+function banUser() {
+  const u = document.getElementById("banUserInput").value.trim();
+  if (!users[u]) return alert("User not found.");
+  users[u].banned = true;
+  users[u].bannedAt = new Date().toLocaleString();
+  saveUsers();
+  renderUserList();
+  alert(`User "${u}" has been banned.`);
+  document.getElementById("banUserInput").value = "";
+}
+
+function deleteUser() {
+  const u = document.getElementById("deleteUserInput").value.trim();
+  if (!users[u]) return alert("User not found.");
+  delete users[u];
+  saveUsers();
+  renderUserList();
+  alert(`User "${u}" has been deleted.`);
+  document.getElementById("deleteUserInput").value = "";
+}
+
+function renderUserList() {
+  userList.innerHTML = "";
+  Object.keys(users).forEach(u => {
+    const info = users[u];
+    const li = document.createElement("li");
+    li.textContent = `${u} ${info.banned ? "(banned)" : ""} — Created: ${info.created || "N/A"}${info.bannedAt ? " — Banned: " + info.bannedAt : ""}`;
+    userList.appendChild(li);
+  });
+}
+
+function showGame() {
+  fadeOut(userDashboard);
+  setTimeout(() => fadeIn(gameScreen), 500);
+  logActivity("opened game");
+}
+
+function showFeedback() {
+  fadeOut(userDashboard);
+  setTimeout(() => fadeIn(feedbackScreen), 500);
+}
+
+function showGameSuggestion() {
+  fadeOut(userDashboard);
+  setTimeout(() => fadeIn(suggestGameScreen), 500);
+}
+
+function backToDashboard() {
+  fadeOut(gameScreen);
+  fadeOut(feedbackScreen);
+  fadeOut(suggestGameScreen);
+  setTimeout(() => fadeIn(userDashboard), 500);
+}
+
+function submitFeedback() {
+  const feedback = document.getElementById("feedbackText").value.trim();
+  if (!feedback) return alert("Please enter your feedback.");
+  const allFeedback = JSON.parse(localStorage.getItem("feedback") || "[]");
+  allFeedback.push({ user: currentUser, message: feedback, time: new Date().toLocaleString() });
+  localStorage.setItem("feedback", JSON.stringify(allFeedback));
+  alert("Thank you for your feedback!");
+  document.getElementById("feedbackText").value = "";
+  logActivity("submitted feedback");
+  backToDashboard();
+}
+
+function readFeedback() {
+  const feedbackList = document.getElementById("feedbackList");
+  const allFeedback = JSON.parse(localStorage.getItem("feedback") || "[]");
+  if (allFeedback.length === 0) {
+    feedbackList.innerHTML = "<p>No feedback submitted yet.</p>";
+    return;
+  }
+  feedbackList.innerHTML = "<h3>📬 Submitted Feedback:</h3><ul>";
+  allFeedback.forEach((entry, index) => {
+    feedbackList.innerHTML += `<li><strong>${entry.user}</strong> <em>(${entry.time})</em><br>${entry.message}<br><button onclick="deleteFeedback(${index})">Delete</button></li><br>`;
+  });
+  feedbackList.innerHTML += "</ul>";
+}
+
+function deleteFeedback(index) {
+  const allFeedback = JSON.parse(localStorage.getItem("feedback") || "[]");
+  if (index >= 0 && index < allFeedback.length) {
+    allFeedback.splice(index, 1);
+    localStorage.setItem("feedback", JSON.stringify(allFeedback));
+    readFeedback();
+  }
+}
+
+function submitGameSuggestion() {
+  const suggestion = document.getElementById("gameSuggestionText").value.trim();
+  if (!suggestion) return alert("Please enter a game suggestion.");
+  const allSuggestions = JSON.parse(localStorage.getItem("gameSuggestions") || "[]");
+  allSuggestions.push({ user: currentUser, message: suggestion, time: new Date().toLocaleString() });
+  localStorage.setItem("gameSuggestions", JSON.stringify(allSuggestions));
+  alert("Thanks for your suggestion!");
+  document.getElementById("gameSuggestionText").value = "";
+  logActivity("suggested a game");
+  backToDashboard();
+}
+
+function readGameSuggestions() {
+  const list = document.getElementById("gameSuggestionsList");
+  const allSuggestions = JSON.parse(localStorage.getItem("gameSuggestions") || "[]");
+  if (allSuggestions.length === 0) {
+    list.innerHTML = "<p>No game suggestions yet.</p>";
+    return;
+  }
+  list.innerHTML = "<h3>🎯 Suggested Games:</h3><ul>";
+  allSuggestions.forEach(entry => {
+    list.innerHTML += `<li><strong>${entry.user}</strong> <em>(${entry.time})</em><br>${entry.message}</li><br>`;
+  });
+  list.innerHTML += "</ul>";
+}
+
+function showRequestForm() {
+  fadeOut(loginScreen);
+  setTimeout(() => fadeIn(requestFormScreen), 500);
+}
+
+function backToLogin() {
+  fadeOut(requestFormScreen);
+  setTimeout(() => fadeIn(loginScreen), 500);
+}
+
+function submitRequest() {
+  const name = document.getElementById("requestName").value.trim();
+  if (!name) return alert("Please enter your name.");
+  const requests = JSON.parse(localStorage.getItem("accountRequests") || "[]");
+  requests.push({ name, time: new Date().toLocaleString() });
+  localStorage.setItem("accountRequests", JSON.stringify(requests));
+  document.getElementById("requestMessage").textContent = "Request submitted. A $3 registration fee is required, which must be payed in cash to Derrick.";
+  document.getElementById("requestName").value = "";
+}
+
+function viewRequestedUsers() {
+  const list = document.getElementById("requestedUsersList");
+  const requests = JSON.parse(localStorage.getItem("accountRequests") || "[]");
+  if (requests.length === 0) {
+    list.innerHTML = "<p>No account requests yet.</p>";
+    return;
+  }
+  list.innerHTML = "<h3>📝 Requested Accounts:</h3><ul>";
+  requests.forEach((entry, index) => {
+    list.innerHTML += `<li><strong>${entry.name}</strong> <em>(${entry.time})</em><br><button onclick="deleteRequest(${index})">Delete</button></li><br>`;
+  });
+  list.innerHTML += "</ul>";
+}
+
+function deleteRequest(index) {
+  const requests = JSON.parse(localStorage.getItem("accountRequests") || "[]");
+  if (index >= 0 && index < requests.length) {
+    requests.splice(index, 1);
+    localStorage.setItem("accountRequests", JSON.stringify(requests));
+    viewRequestedUsers();
+  }
+}
+
+function logActivity(action) {
+  const log = JSON.parse(localStorage.getItem("activityLog") || "[]");
+  log.push({ user: currentUser, action, time: new Date().toLocaleString() });
+  localStorage.setItem("activityLog", JSON.stringify(log));
+}
+
+function readActivityLog() {
+  const activityList = document.getElementById("activityList");
+  const log = JSON.parse(localStorage.getItem("activityLog") || "[]");
+  if (log.length === 0) {
+    activityList.innerHTML = "<p>No activity recorded yet.</p>";
+    return;
+  }
+    activityList.innerHTML = "<h3>📋 User Activity Log:</h3><ul>";
+  log.forEach(entry => {
+    activityList.innerHTML += `<li><strong>${entry.user}</strong> ${entry.action} at <em>${entry.time}</em></li>`;
+  });
+  activityList.innerHTML += "</ul>";
+}
+
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const isHidden = section.style.display === "none" || section.style.display === "";
+  section.style.display = isHidden ? "block" : "none";
+  if (isHidden) {
+    if (id === "feedbackList") readFeedback();
+    if (id === "activityList") readActivityLog();
+    if (id === "gameSuggestionsList") readGameSuggestions();
+    if (id === "requestedUsersList") viewRequestedUsers();
+  }
+}
+
+function fadeIn(element) {
+  element.classList.add("fade");
+  element.style.display = "block";
+  setTimeout(() => element.classList.add("show"), 10);
+}
+
+function fadeOut(element) {
+  element.classList.remove("show");
+  setTimeout(() => {
+    element.classList.remove("fade");
+    element.style.display = "none";
+  }, 500);
+}
+
+termsBtn.onclick = () => {
+  termsModal.style.display = "flex";
+};
+
+function closeTerms() {
+  termsModal.style.display = "none";
+}
+
+loginScreen.style.display = "block";
+logoutBtn.style.display = "none";
+
+function renderPasswords() {
+  const list = document.getElementById("passwordList");
+  if (!users || Object.keys(users).length === 0) {
+    list.innerHTML = "<p>No users found.</p>";
+    return;
+  }
+  list.innerHTML = "<h3>🔐 User Passwords:</h3><ul>";
+  Object.entries(users).forEach(([username, data]) => {
+    list.innerHTML += `<li><strong>${username}</strong>: ${data.password}</li>`;
+  });
+  list.innerHTML += "</ul>";
+}
+
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const isHidden = section.style.display === "none" || section.style.display === "";
+  section.style.display = isHidden ? "block" : "none";
+  if (isHidden) {
+    if (id === "feedbackList") readFeedback();
+    if (id === "activityList") readActivityLog();
+    if (id === "gameSuggestionsList") readGameSuggestions();
+    if (id === "requestedUsersList") viewRequestedUsers();
+    if (id === "passwordList") renderPasswords();
+  }
+}
+</script>
+</body>
+</html>
