@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ClassroomGMS</title>
+  <title>Game Access Portal</title>
   <style>
     body {
       margin: 0;
@@ -100,12 +100,16 @@
   <input type="text" id="username" placeholder="Username" /><br>
   <input type="password" id="password" placeholder="Password" /><br>
   <button onclick="login()">Login</button>
-  <button onclick="showRequestForm()">Sign Up</button>
+  <button onclick="showRequestForm()">Request an Account</button>
   <p id="loginError" style="color:red;"></p>
 </div>
 
 <div id="requestFormScreen">
-  <h2>To sign up, please contact Derrick.</h2>
+  <h2>Request an Account</h2>
+  <input type="text" id="requestName" placeholder="Your Name" /><br>
+  <button onclick="submitRequest()">Submit Request</button>
+  <p id="requestMessage" style="color:lightgreen;"></p>
+  <button onclick="backToLogin()">Back</button>
 </div>
 
 <div id="adminDashboard">
