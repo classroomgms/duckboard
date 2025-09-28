@@ -1,9 +1,8 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// Import route files (make sure each exports a valid router)
+// Import route files
 const authRoutes = require("./backend/routes/auth");
 const userRoutes = require("./routes/users");
 const feedbackRoutes = require("./routes/feedback");
@@ -11,10 +10,15 @@ const suggestionRoutes = require("./routes/suggestions");
 const activityRoutes = require("./routes/activity");
 
 const app = express();
-app.use(cors());
+
+// CORS setup to allow frontend access
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+}));
+
 app.use(express.json());
 
-// Connect to MongoDB (use environment variable for cloud deployment)
+// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -29,9 +33,14 @@ app.use("/api", feedbackRoutes);
 app.use("/api", suggestionRoutes);
 app.use("/api", activityRoutes);
 
-// Serve frontend if using combined deployment
-// app.use(express.static("public")); // Uncomment if frontend is in /public
+// Optional: Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
 
-// Start server on dynamic port (Render sets process.env.PORT)
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
